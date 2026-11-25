@@ -66,14 +66,39 @@ const onFotoChange = (e: Event) => {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
-  if (file.size > 3 * 1024 * 1024) {
-    errorMsg.value = 'La foto no puede superar los 3 MB.'
+  if (file.size > 10 * 1024 * 1024) {
+    errorMsg.value = 'La foto seleccionada es demasiado pesada (máx. 10 MB).'
     return
   }
   fotoNombre.value = file.name
   const reader = new FileReader()
   reader.onload = () => {
-    form.fotoBase64 = String(reader.result || '')
+    const img = new Image()
+    img.onload = () => {
+      const maxDim = 960
+      let w = img.width
+      let h = img.height
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w)
+          w = maxDim
+        } else {
+          w = Math.round((w * maxDim) / h)
+          h = maxDim
+        }
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, w, h)
+        form.fotoBase64 = canvas.toDataURL('image/jpeg', 0.72)
+      } else {
+        form.fotoBase64 = String(reader.result || '')
+      }
+    }
+    img.src = String(reader.result || '')
   }
   reader.readAsDataURL(file)
 }

@@ -37,13 +37,21 @@ export default defineEventHandler(async (event) => {
     if (match) {
       const ext = match[1] === 'jpeg' ? 'jpg' : match[1]
       const buffer = Buffer.from(match[2], 'base64')
-      // Limite 3MB
-      if (buffer.length <= 3 * 1024 * 1024) {
-        const filename = `rep-${Date.now()}-${Math.floor(Math.random() * 10000)}.${ext}`
-        const uploadsDir = join(process.cwd(), 'public', 'uploads')
-        await mkdir(uploadsDir, { recursive: true })
-        await writeFile(join(uploadsDir, filename), buffer)
-        fotoUrl = `/uploads/${filename}`
+      // En Vercel serverless el disco es solo lectura: guardamos el data URL optimizado en BD
+      if (process.env.VERCEL) {
+        if (buffer.length <= 1.5 * 1024 * 1024) {
+          fotoUrl = parsed.data.fotoBase64
+        }
+      } else if (buffer.length <= 3 * 1024 * 1024) {
+        try {
+          const filename = `rep-${Date.now()}-${Math.floor(Math.random() * 10000)}.${ext}`
+          const uploadsDir = join(process.cwd(), 'public', 'uploads')
+          await mkdir(uploadsDir, { recursive: true })
+          await writeFile(join(uploadsDir, filename), buffer)
+          fotoUrl = `/uploads/${filename}`
+        } catch {
+          fotoUrl = parsed.data.fotoBase64
+        }
       }
     }
   }
