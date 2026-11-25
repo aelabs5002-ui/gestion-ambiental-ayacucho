@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Para migrar a Supabase PostgreSQL en producción:
+// 1. Cambia provider = "postgresql"
+// 2. Actualiza DATABASE_URL en las variables de entorno de Vercel
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             String             @id @default(cuid())
+  nombre         String
+  cedula         String             @unique
+  correo         String             @unique
+  telefono       String
+  passwordHash   String
+  rol            String             @default("usuario") // usuario | admin | supervisor
+  estado         String             @default("activo")  // activo | inactivo
+  fechaRegistro  DateTime           @default(now())
+  ultimoAcceso   DateTime?
+  hogar          Hogar?
+  reportes       Reporte[]
+  respuestas     RespuestaReporte[]
+  avisosCreados  Aviso[]
+  notificaciones Notificacion[]
+  conversaciones ConversacionChat[]
+  auditorias     Auditoria[]
+}
+
+model Sector {
+  id              String   @id @default(cuid())
+  nombre          String   @unique
+  descripcion     String
+  latitud         Float
+  longitud        Float
+  horarioEstimado String
+  hogares         Hogar[]
+}
+
+model Hogar {
+  id           String  @id @default(cuid())
+  usuarioId    String  @unique
+  sectorId     String
+  numeroCasa   String
+  direccion    String
+  numeroCuenta String  @unique
+  estado       String  @default("activo") // activo | inactivo
+  usuario      Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  sector       Sector  @relation(fields: [sectorId], references: [id])
+  pagos        Pago[]
+}
+
+model Pago {
+  id             String    @id @default(cuid())
+  hogarId        String
+  anio           Int
+  mes            Int       // 1..12
+  montoUsd       Float     @default(3.0)
+  montoBs        Float
+  tasaCambio     Float
+  fechaPago      DateTime?
+  fechaVenc      DateTime
+  metodo         String    @default("Ubii Pagos")
+  referencia     String?
+  estado         String    @default("pendiente") // pagado | pendiente | vencido
+  comprobanteUrl String?
+  esSimulado     Boolean   @default(true)
+  hogar          Hogar     @relation(fields: [hogarId], references: [id], onDelete: Cascade)
+
+  @@unique([hogarId, anio, mes])
+  @@index([anio, mes, estado])
+}
+
+model Unidad {
+  id                  String      @id @default(cuid())
+  identificador       String      @unique
+  placa               String
+  chofer              String
+  estado              String      @default("en_ruta") // en_ruta | detenida | fuera_de_servicio
+  sectoresAsignados   String
+  horarioEstimado     String
+  latitudActual       Float
+  longitudActual      Float
+  ultimaActualizacion DateTime    @default(now())
+  ubicaciones         Ubicacion[]
+}
+
+model Ubicacion {
+  id           String   @id @default(cuid())
+  unidadId     String
+  latitud      Float
+  longitud     Float
+  sectorNombre String
+  timestamp    DateTime @default(now())
+  unidad       Unidad   @relation(fields: [unidadId], references: [id], onDelete: Cascade)
+
+  @@index([unidadId, timestamp])
+}
+
+model Aviso {
+  id                 String   @id @default(cuid())
+  asunto             String
+  mensaje            String
+  tipoDestinatario   String
+  totalDestinatarios Int
+  destinatariosJson  String
+  fechaEnvio         DateTime @default(now())
+  estado             String   @default("enviado")
+  creadoPorId        String
+  creadoPor          Usuario  @relation(fields: [creadoPorId], references: [id])
+}
+
+model Notificacion {
+  id            String   @id @default(cuid())
+  usuarioId     String
+  titulo        String
+  mensaje       String
+  tipo          String   @default("aviso") // aviso | reporte | pago
+  leida         Boolean  @default(false)
+  enlace        String?
+  fechaCreacion DateTime @default(now())
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, leida])
+}
+
+model Reporte {
+  id                 String             @id @default(cuid())
+  usuarioId          String
+  sectorNombre       String
+  categoria          String // Recolección no realizada | Unidad dañada | Maltrato | Sugerencia | Otro
+  descripcion        String
+  ubicacion          String
+  latitud            Float?
+  longitud           Float?
+  fotoUrl            String?
+  estado             String             @default("recibido") // recibido | en_proceso | resuelto
+  fechaCreacion      DateTime           @default(now())
+  fechaActualizacion DateTime           @updatedAt
+  usuario            Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  respuestas         RespuestaReporte[]
+}
+
+model RespuestaReporte {
+  id              String   @id @default(cuid())
+  reporteId       String
+  administradorId String
+  mensaje         String
+  fecha           DateTime @default(now())
+  reporte         Reporte  @relation(fields: [reporteId], references: [id], onDelete: Cascade)
+  administrador   Usuario  @relation(fields: [administradorId], references: [id])
+}
+
+model ConversacionChat {
+  id                 String        @id @default(cuid())
+  usuarioId          String
+  fechaInicio        DateTime      @default(now())
+  fechaUltimoMensaje DateTime      @default(now())
+  usuario            Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  mensajes           MensajeChat[]
+}
+
+model MensajeChat {
+  id             String           @id @default(cuid())
+  conversacionId String
+  rol            String // user | assistant
+  contenido      String
+  timestamp      DateTime         @default(now())
+  conversacion   ConversacionChat @relation(fields: [conversacionId], references: [id], onDelete: Cascade)
+}
+
+model Auditoria {
+  id              String   @id @default(cuid())
+  administradorId String
+  accion          String
+  entidad         String
+  entidadId       String
+  detalle         String?
+  timestamp       DateTime @default(now())
+  administrador   Usuario  @relation(fields: [administradorId], references: [id])
+}
+
+model Configuracion {
+  clave         String   @id
+  valor         String
+  descripcion   String
+  actualizadoEn DateTime @updatedAt
+}

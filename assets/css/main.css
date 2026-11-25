@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #F5F7FA;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply bg-white rounded-lg shadow-card border border-[#E0E4E8] p-4;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-[#1565C0] px-4 h-10 md:h-11 text-sm font-medium text-white transition-colors hover:bg-[#0D47A1] active:bg-[#0A3880] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#1565C0]/40;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-[#C62828] px-4 h-10 md:h-11 text-sm font-medium text-white transition-colors hover:bg-[#B71C1C] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#C62828]/40;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-[#1565C0] bg-transparent px-4 h-10 md:h-11 text-sm font-medium text-[#1565C0] transition-colors hover:bg-[#1565C0]/[0.05] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-transparent px-3 h-10 text-sm font-medium text-[#616161] transition-colors hover:bg-[#E0E0E0]/60 hover:text-[#1A1A1A] disabled:opacity-50;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-[#BDBDBD] bg-white px-3 h-10 text-sm text-[#1A1A1A] placeholder-[#9E9E9E] transition focus:border-[#1565C0] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/20;
+  }
+
+  .badge-pagado {
+    @apply inline-flex items-center rounded-full bg-[#E8F5E9] px-2.5 py-1 text-xs font-medium text-[#2E7D32];
+  }
+
+  .badge-pendiente {
+    @apply inline-flex items-center rounded-full bg-[#FFF8E1] px-2.5 py-1 text-xs font-medium text-[#8D5B00];
+  }
+
+  .badge-vencido {
+    @apply inline-flex items-center rounded-full bg-[#FFEBEE] px-2.5 py-1 text-xs font-medium text-[#C62828];
+  }
+
+  .badge-neutro {
+    @apply inline-flex items-center rounded-full bg-[#ECEEF1] px-2.5 py-1 text-xs font-medium text-[#424752];
+  }
+}
