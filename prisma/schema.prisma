@@ -2,11 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Para migrar a Supabase PostgreSQL en producción:
-// 1. Cambia provider = "postgresql"
-// 2. Actualiza DATABASE_URL en las variables de entorno de Vercel
+// Base de datos PostgreSQL gestionada en Supabase
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
