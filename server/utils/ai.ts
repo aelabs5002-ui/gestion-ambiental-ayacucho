@@ -47,7 +47,7 @@ Datos reales del servicio:
     const payload = JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 350 }
+      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 }
     })
 
     const modelos = ['gemini-3.8-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash']
