@@ -33,40 +33,64 @@ Datos reales del servicio:
 - Contexto del vecino que escribe: ${params.nombreUsuario}, Sector ${params.sectorUsuario}, estado del mes actual: ${params.estadoPagoActual}.
 - Para denuncias o sugerencias, indícale que puede usar la sección "Reportes" para seguimiento con número de caso y respuesta oficial.`
 
-  if (config.geminiApiKey) {
-    try {
-      const contents = [
-        ...params.historial.slice(-8).map((m) => ({
-          role: m.rol === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.contenido }]
-        })),
-        { role: 'user', parts: [{ text: params.mensajeUsuario }] }
-      ]
+  const apiKey = (process.env.GEMINI_API_KEY || config.geminiApiKey || '').trim()
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(
-          config.geminiApiKey
-        )}`,
-        {
+  if (apiKey) {
+    const contents = [
+      ...params.historial.slice(-8).map((m) => ({
+        role: m.rol === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.contenido }]
+      })),
+      { role: 'user', parts: [{ text: params.mensajeUsuario }] }
+    ]
+
+    const payload = JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 350 }
+    })
+
+    const endpoints: Array<{ url: string; headers: Record<string, string> }> = apiKey.startsWith('AQ.')
+      ? [
+          {
+            url: `https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+            headers: { 'Content-Type': 'application/json' }
+          },
+          {
+            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
+          }
+        ]
+      : [
+          {
+            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
+          },
+          {
+            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
+          }
+        ]
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep.url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents,
-            generationConfig: { temperature: 0.4, maxOutputTokens: 350 }
-          })
+          headers: ep.headers,
+          body: payload
+        })
+        if (res.ok) {
+          const data: any = await res.json()
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
+          if (text) {
+            return { texto: text.trim(), proveedor: 'gemini' }
+          }
+        } else {
+          console.warn('Gemini endpoint status:', res.status, await res.text().catch(() => ''))
         }
-      )
-
-      if (res.ok) {
-        const data: any = await res.json()
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
-        if (text) {
-          return { texto: text.trim(), proveedor: 'gemini' }
-        }
+      } catch (err) {
+        console.warn('Gemini API fallback activado:', err)
       }
-    } catch (err) {
-      console.warn('Gemini API fallback activado:', err)
     }
   }
 
