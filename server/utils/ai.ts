@@ -50,35 +50,21 @@ Datos reales del servicio:
       generationConfig: { temperature: 0.4, maxOutputTokens: 350 }
     })
 
-    const endpoints: Array<{ url: string; headers: Record<string, string> }> = apiKey.startsWith('AQ.')
-      ? [
-          {
-            url: `https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
-            headers: { 'Content-Type': 'application/json' }
-          },
-          {
-            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
-          }
-        ]
-      : [
-          {
-            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
-          },
-          {
-            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }
-          }
-        ]
+    const modelos = ['gemini-3.8-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash']
 
-    for (const ep of endpoints) {
+    for (const modelo of modelos) {
       try {
-        const res = await fetch(ep.url, {
-          method: 'POST',
-          headers: ep.headers,
-          body: payload
-        })
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': apiKey
+            },
+            body: payload
+          }
+        )
         if (res.ok) {
           const data: any = await res.json()
           const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
@@ -86,10 +72,10 @@ Datos reales del servicio:
             return { texto: text.trim(), proveedor: 'gemini' }
           }
         } else {
-          console.warn('Gemini endpoint status:', res.status, await res.text().catch(() => ''))
+          console.warn(`Gemini (${modelo}) status:`, res.status, await res.text().catch(() => ''))
         }
       } catch (err) {
-        console.warn('Gemini API fallback activado:', err)
+        console.warn(`Gemini (${modelo}) fallback:`, err)
       }
     }
   }
