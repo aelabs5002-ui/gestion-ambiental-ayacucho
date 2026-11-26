@@ -1,6 +1,8 @@
 # Gestión Ambiental Ayacucho — Web App de Aseo Urbano y Cobros
 
-Plataforma web institucional (**Nuxt 3 + Tailwind CSS + Prisma**) diseñada para gestionar el servicio municipal de recolección de desechos sólidos, cobros mensuales (\$3.00 USD / equivalente en Bs. vía **Ubii Pagos**), seguimiento GPS de las 3 unidades, chat con IA (Gemini) y atención de denuncias vecinales.
+> **Enlace de demostración en vivo (HTTPS):** https://gestion-ambiental-ayacucho.vercel.app
+
+Plataforma web institucional (**Nuxt 3 + Tailwind CSS + Prisma + Supabase + Gemini 2.5 Flash**) diseñada para gestionar el servicio municipal de recolección de desechos sólidos, cobros mensuales (\$3.00 USD / equivalente en Bs. vía **Ubii Pagos**), seguimiento GPS de las 3 unidades, chat con IA y atención de denuncias vecinales.
 
 ---
 
