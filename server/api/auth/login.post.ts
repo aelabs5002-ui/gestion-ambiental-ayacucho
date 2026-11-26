@@ -2,10 +2,11 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '~/server/utils/prisma'
 import { createSessionToken, sanitizeUser, setAuthCookie } from '~/server/utils/auth'
+import { findUserByIdentifier } from '~/server/utils/cedula'
 
 const loginSchema = z.object({
-  identificador: z.string().min(3).optional(),
-  password: z.string().min(4).optional(),
+  identificador: z.string().trim().min(3, 'Ingresa tu correo o cédula.').optional(),
+  password: z.string().min(4, 'Ingresa tu contraseña.').optional(),
   demoRole: z.enum(['usuario', 'admin', 'supervisor']).optional()
 })
 
@@ -13,7 +14,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const parsed = loginSchema.safeParse(body)
   if (!parsed.success) {
-    throw createError({ statusCode: 400, statusMessage: 'Datos de inicio de sesión inválidos.' })
+    const firstMsg = parsed.error.issues[0]?.message || 'Datos de inicio de sesión inválidos.'
+    throw createError({ statusCode: 400, statusMessage: firstMsg })
   }
 
   const config = useRuntimeConfig()
@@ -35,21 +37,22 @@ export default defineEventHandler(async (event) => {
     if (!identificador || !password) {
       throw createError({ statusCode: 400, statusMessage: 'Ingresa tu correo o cédula y tu contraseña.' })
     }
-    const cleanId = identificador.trim()
-    usuario = await prisma.usuario.findFirst({
-      where: {
-        OR: [{ correo: cleanId.toLowerCase() }, { cedula: cleanId.toUpperCase() }, { cedula: cleanId }]
-      },
-      include: { hogar: { include: { sector: true } } }
-    })
+
+    usuario = await findUserByIdentifier(prisma, identificador)
 
     if (!usuario) {
-      throw createError({ statusCode: 401, statusMessage: 'Credenciales incorrectas.' })
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Credenciales incorrectas. Verifica tu correo o cédula y tu contraseña.'
+      })
     }
 
     const valid = await bcrypt.compare(password, usuario.passwordHash)
     if (!valid) {
-      throw createError({ statusCode: 401, statusMessage: 'Credenciales incorrectas.' })
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Credenciales incorrectas. Verifica tu correo o cédula y tu contraseña.'
+      })
     }
   }
 

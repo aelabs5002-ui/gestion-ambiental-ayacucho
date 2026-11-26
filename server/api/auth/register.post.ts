@@ -2,18 +2,30 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '~/server/utils/prisma'
 import { createSessionToken, sanitizeUser, setAuthCookie } from '~/server/utils/auth'
+import { findDuplicateUser, normalizeCedula, parseCedulaInput } from '~/server/utils/cedula'
 import { getSystemSettings } from '~/server/utils/config'
 
 const registerSchema = z.object({
-  nombre: z.string().min(3, 'Ingresa tu nombre completo'),
-  cedula: z.string().min(5, 'Ingresa una cédula válida'),
-  telefono: z.string().min(7, 'Ingresa un número de teléfono válido'),
-  correo: z.string().email('Correo electrónico inválido'),
+  nombre: z.string().trim().min(3, 'Ingresa tu nombre completo'),
+  cedula: z.string().trim().min(5, 'Ingresa una cédula válida'),
+  telefono: z.string().trim().min(7, 'Ingresa un número de teléfono válido'),
+  correo: z.string().trim().email('Correo electrónico inválido'),
   sectorId: z.string().min(1, 'Selecciona tu sector'),
-  numeroCasa: z.string().min(1, 'Indica el número de casa'),
-  direccion: z.string().min(5, 'Indica la dirección exacta'),
+  numeroCasa: z.string().trim().min(1, 'Indica el número de casa'),
+  direccion: z.string().trim().min(5, 'Indica la dirección exacta'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres')
 })
+
+async function generarNumeroCuentaUnico(): Promise<string> {
+  const totalHogares = await prisma.hogar.count()
+  let consecutivo = 1001 + totalHogares
+  for (let intento = 0; intento < 25; intento++) {
+    const candidato = `AYA-${String(consecutivo + intento).padStart(5, '0')}`
+    const existe = await prisma.hogar.findUnique({ where: { numeroCuenta: candidato }, select: { id: true } })
+    if (!existe) return candidato
+  }
+  return `AYA-${Date.now().toString().slice(-6)}`
+}
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -24,16 +36,25 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = parsed.data
-  const correoNorm = data.correo.trim().toLowerCase()
-  const cedulaNorm = data.cedula.trim().toUpperCase()
+  const parsedCedula = parseCedulaInput(data.cedula)
+  if (!parsedCedula.isCedula) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Ingresa una cédula válida (ej. V-18456123 o 18456123).'
+    })
+  }
 
-  const exists = await prisma.usuario.findFirst({
-    where: { OR: [{ correo: correoNorm }, { cedula: cedulaNorm }] }
-  })
-  if (exists) {
+  const correoNorm = data.correo.trim().toLowerCase()
+  const cedulaNorm = normalizeCedula(data.cedula)
+
+  const duplicate = await findDuplicateUser(prisma, correoNorm, cedulaNorm)
+  if (duplicate) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'Ya existe una cuenta registrada con ese correo o cédula.'
+      statusMessage:
+        duplicate.reason === 'correo'
+          ? 'Ya existe una cuenta registrada con ese correo electrónico.'
+          : 'Ya existe una cuenta registrada con esa cédula.'
     })
   }
 
@@ -42,8 +63,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'El sector seleccionado no es válido.' })
   }
 
-  const totalHogares = await prisma.hogar.count()
-  const numeroCuenta = `AYA-${String(1001 + totalHogares + Math.floor(Math.random() * 50)).padStart(5, '0')}`
+  const numeroCuenta = await generarNumeroCuentaUnico()
   const passwordHash = await bcrypt.hash(data.password, 10)
   const settings = await getSystemSettings()
   const now = new Date()

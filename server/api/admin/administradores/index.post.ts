@@ -1,14 +1,15 @@
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { requireRole } from '~/server/utils/auth'
+import { findDuplicateUser, normalizeCedula, parseCedulaInput } from '~/server/utils/cedula'
 import { prisma } from '~/server/utils/prisma'
 import { registrarAuditoria } from '~/server/utils/config'
 
 const schema = z.object({
-  nombre: z.string().min(3),
-  cedula: z.string().min(5),
-  correo: z.string().email(),
-  telefono: z.string().min(7).default('0414-0000000'),
+  nombre: z.string().trim().min(3),
+  cedula: z.string().trim().min(5),
+  correo: z.string().trim().email(),
+  telefono: z.string().trim().min(7).default('0414-0000000'),
   password: z.string().min(6),
   rol: z.enum(['admin', 'supervisor'])
 })
@@ -24,13 +25,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const correoNorm = parsed.data.correo.trim().toLowerCase()
-  const cedulaNorm = parsed.data.cedula.trim().toUpperCase()
+  if (!parseCedulaInput(parsed.data.cedula).isCedula) {
+    throw createError({ statusCode: 400, statusMessage: 'Ingresa una cédula válida (ej. V-15000000).' })
+  }
 
-  const exists = await prisma.usuario.findFirst({
-    where: { OR: [{ correo: correoNorm }, { cedula: cedulaNorm }] }
-  })
-  if (exists) {
+  const correoNorm = parsed.data.correo.trim().toLowerCase()
+  const cedulaNorm = normalizeCedula(parsed.data.cedula)
+
+  const duplicate = await findDuplicateUser(prisma, correoNorm, cedulaNorm)
+  if (duplicate) {
     throw createError({ statusCode: 409, statusMessage: 'Ya existe un usuario con ese correo o cédula.' })
   }
 

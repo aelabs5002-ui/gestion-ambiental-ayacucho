@@ -3,6 +3,7 @@ import { getSystemSettings } from '~/server/utils/config'
 import { prisma } from '~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'Cache-Control', 'no-store, no-cache, must-revalidate')
   const usuario = await getSessionUser(event)
   const settings = await getSystemSettings()
 

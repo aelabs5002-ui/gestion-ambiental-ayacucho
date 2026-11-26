@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { Recycle, ShieldCheck, User, Eye, ArrowRight, Lock, Mail } from 'lucide-vue-next'
+import { ShieldCheck, User, Eye, EyeOff, ArrowRight, Lock, Mail, IdCard } from 'lucide-vue-next'
 
 definePageMeta({ layout: false })
 
-const { fetchMe, homePathForRole, settings } = useAuth()
+const { fetchMe, setUser, homePathForRole, settings } = useAuth()
 const identificador = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const loading = ref(false)
 const demoLoading = ref<string | null>(null)
 const errorMsg = ref('')
+
+const tipoIdentificador = computed<'correo' | 'cedula' | 'generico'>(() => {
+  const val = identificador.value.trim()
+  if (!val) return 'generico'
+  if (val.includes('@')) return 'correo'
+  const compact = val.toUpperCase().replace(/[\s.,_-]+/g, '')
+  if (/^([VEJPG]?\d{3,})$/.test(compact) || /^[VEJPG]-/i.test(val)) return 'cedula'
+  return 'generico'
+})
 
 const iniciarSesion = async () => {
   errorMsg.value = ''
@@ -16,8 +26,9 @@ const iniciarSesion = async () => {
   try {
     const res = await $fetch<{ usuario: any }>('/api/auth/login', {
       method: 'POST',
-      body: { identificador: identificador.value, password: password.value }
+      body: { identificador: identificador.value.trim(), password: password.value }
     })
+    setUser(res.usuario)
     await fetchMe(true)
     await navigateTo(homePathForRole(res.usuario.rol))
   } catch (err: any) {
@@ -35,6 +46,7 @@ const accesoRapidoDemo = async (demoRole: 'usuario' | 'admin' | 'supervisor') =>
       method: 'POST',
       body: { demoRole }
     })
+    setUser(res.usuario)
     await fetchMe(true)
     await navigateTo(homePathForRole(res.usuario.rol))
   } catch (err: any) {
@@ -128,17 +140,41 @@ const accesoRapidoDemo = async (demoRole: 'usuario' | 'admin' | 'supervisor') =>
                 Correo electrónico o Cédula
               </label>
               <div class="relative">
-                <Mail class="w-4 h-4 text-[#616161] absolute left-3 top-3" />
+                <Mail
+                  v-if="tipoIdentificador === 'correo'"
+                  class="w-4 h-4 text-[#1565C0] absolute left-3 top-3 pointer-events-none"
+                />
+                <IdCard
+                  v-else-if="tipoIdentificador === 'cedula'"
+                  class="w-4 h-4 text-[#1565C0] absolute left-3 top-3 pointer-events-none"
+                />
+                <User
+                  v-else
+                  class="w-4 h-4 text-[#616161] absolute left-3 top-3 pointer-events-none"
+                />
                 <input
                   id="identificador"
                   v-model="identificador"
                   type="text"
                   required
                   autocomplete="username"
+                  autocapitalize="none"
+                  autocorrect="off"
+                  spellcheck="false"
                   placeholder="ejemplo@correo.ve o V-18456123"
                   class="input-field pl-9"
+                  :class="tipoIdentificador !== 'generico' ? 'pr-16' : ''"
                 />
+                <span
+                  v-if="tipoIdentificador !== 'generico'"
+                  class="absolute right-2.5 top-2 text-[11px] font-semibold px-2 py-0.5 rounded bg-[#E3F2FD] text-[#1565C0] pointer-events-none"
+                >
+                  {{ tipoIdentificador === 'correo' ? 'Correo' : 'Cédula' }}
+                </span>
               </div>
+              <p class="mt-1 text-[11px] text-[#616161]">
+                Admite correo o cédula con o sin prefijo (ej. <span class="font-medium text-[#1A1A1A]">18456123</span> o <span class="font-medium text-[#1A1A1A]">V-18456123</span>).
+              </p>
             </div>
 
             <div>
@@ -151,16 +187,25 @@ const accesoRapidoDemo = async (demoRole: 'usuario' | 'admin' | 'supervisor') =>
                 </NuxtLink>
               </div>
               <div class="relative">
-                <Lock class="w-4 h-4 text-[#616161] absolute left-3 top-3" />
+                <Lock class="w-4 h-4 text-[#616161] absolute left-3 top-3 pointer-events-none" />
                 <input
                   id="password"
                   v-model="password"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   required
                   autocomplete="current-password"
                   placeholder="••••••••"
-                  class="input-field pl-9"
+                  class="input-field pl-9 pr-10"
                 />
+                <button
+                  type="button"
+                  class="absolute right-2.5 top-2.5 p-0.5 text-[#616161] hover:text-[#1A1A1A]"
+                  :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  @click="showPassword = !showPassword"
+                >
+                  <EyeOff v-if="showPassword" class="w-4 h-4" />
+                  <Eye v-else class="w-4 h-4" />
+                </button>
               </div>
             </div>
 

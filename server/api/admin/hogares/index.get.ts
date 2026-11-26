@@ -66,10 +66,12 @@ export default defineEventHandler(async (event) => {
   })
 
   if (q) {
+    const qDigits = q.replace(/[^0-9]/g, '')
     filtrados = filtrados.filter(
       (h) =>
         h.nombre.toLowerCase().includes(q) ||
         h.cedula.toLowerCase().includes(q) ||
+        (qDigits.length >= 4 && h.cedula.replace(/[^0-9]/g, '').includes(qDigits)) ||
         h.numeroCuenta.toLowerCase().includes(q) ||
         h.correo.toLowerCase().includes(q)
     )

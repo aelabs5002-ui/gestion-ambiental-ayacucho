@@ -13,7 +13,8 @@ export interface SessionPayload {
 
 function getSecretKey() {
   const config = useRuntimeConfig()
-  return new TextEncoder().encode(config.jwtSecret)
+  const secret = process.env.JWT_SECRET || config.jwtSecret
+  return new TextEncoder().encode(secret)
 }
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
@@ -49,7 +50,12 @@ export function setAuthCookie(event: H3Event, token: string) {
 }
 
 export function clearAuthCookie(event: H3Event) {
-  deleteCookie(event, AUTH_COOKIE, { path: '/' })
+  deleteCookie(event, AUTH_COOKIE, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/'
+  })
 }
 
 export async function getSessionUser(event: H3Event) {

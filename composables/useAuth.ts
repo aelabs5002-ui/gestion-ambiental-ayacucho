@@ -61,11 +61,20 @@ export const useAuth = () => {
     return user.value
   }
 
+  const setUser = (nextUser: AuthUser | null) => {
+    user.value = nextUser
+    loaded.value = true
+  }
+
   const logout = async () => {
-    await $fetch('/api/auth/logout', { method: 'POST' })
-    user.value = null
-    unreadCount.value = 0
-    await navigateTo('/login')
+    try {
+      await $fetch('/api/auth/logout', { method: 'POST' })
+    } finally {
+      user.value = null
+      unreadCount.value = 0
+      loaded.value = false
+      await navigateTo('/login')
+    }
   }
 
   const homePathForRole = (rol?: string) => {
@@ -80,6 +89,7 @@ export const useAuth = () => {
     unreadCount,
     loaded,
     fetchMe,
+    setUser,
     logout,
     homePathForRole
   }
