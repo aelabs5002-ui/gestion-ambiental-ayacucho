@@ -58,13 +58,14 @@ const isActive = (path: string) => {
     <div class="flex-1 flex">
       <!-- Sidebar fija desktop -->
       <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#1565C0] text-white shrink-0">
-        <div class="p-5 border-b border-white/15 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-            <Recycle class="w-6 h-6 text-white" />
-          </div>
-          <div class="min-w-0">
-            <div class="font-bold text-sm leading-tight">Panel Institucional</div>
-            <div class="text-xs text-[#DAE5FF] truncate">Ayacucho · Gestión Ambiental</div>
+        <div class="p-4 border-b border-white/15 flex flex-col items-center gap-2">
+          <img
+            src="/images/logo-alcaldia-ayacucho.png"
+            alt="Alcaldía Bolivariana del Municipio Ayacucho"
+            class="w-full max-w-[210px] h-auto object-contain"
+          />
+          <div class="text-[11px] font-medium text-[#DAE5FF] tracking-wide uppercase">
+            Panel Institucional · Aseo Urbano
           </div>
         </div>
 
@@ -108,9 +109,13 @@ const isActive = (path: string) => {
           @click.self="mobileMenuOpen = false"
         >
           <aside class="w-72 bg-[#1565C0] text-white h-full flex flex-col shadow-modal">
-            <div class="p-4 border-b border-white/15 flex items-center justify-between">
-              <div class="font-bold text-sm">Panel Institucional</div>
-              <button class="p-1.5 rounded-lg hover:bg-white/15" @click="mobileMenuOpen = false">
+            <div class="p-4 border-b border-white/15 flex items-center justify-between gap-2">
+              <img
+                src="/images/logo-alcaldia-ayacucho.png"
+                alt="Alcaldía de Ayacucho"
+                class="h-10 w-auto object-contain"
+              />
+              <button class="p-1.5 rounded-lg hover:bg-white/15 shrink-0" @click="mobileMenuOpen = false">
                 <X class="w-5 h-5" />
               </button>
             </div>

@@ -55,9 +55,11 @@ const registrar = async () => {
 
         <div class="card-surface space-y-4">
           <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-lg bg-[#1565C0] text-white flex items-center justify-center shrink-0">
-              <Recycle class="w-6 h-6" />
-            </div>
+            <img
+              src="/images/isotipo-alcaldia-ayacucho.png"
+              alt="Alcaldía de Ayacucho"
+              class="w-12 h-12 object-contain shrink-0"
+            />
             <div>
               <h1 class="text-xl font-bold text-[#1A1A1A]">Registro de Hogar</h1>
               <p class="text-xs text-[#616161]">Crea tu cuenta única de servicio municipal ($3.00 USD/mes)</p>

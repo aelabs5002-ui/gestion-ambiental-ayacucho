@@ -39,13 +39,14 @@ const isActive = (path: string) => {
     <div class="flex-1 flex">
       <!-- Sidebar fija escritorio (lg+) -->
       <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-[#1565C0] text-white shrink-0">
-        <div class="p-5 border-b border-white/15 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-            <Recycle class="w-6 h-6 text-white" />
-          </div>
-          <div class="min-w-0">
-            <div class="font-bold text-sm leading-tight">Gestión Ambiental</div>
-            <div class="text-xs text-[#DAE5FF] truncate">Municipio Ayacucho</div>
+        <div class="p-4 border-b border-white/15 flex flex-col items-center gap-2">
+          <img
+            src="/images/logo-alcaldia-ayacucho.png"
+            alt="Alcaldía Bolivariana del Municipio Ayacucho"
+            class="w-full max-w-[210px] h-auto object-contain"
+          />
+          <div class="text-[11px] font-medium text-[#DAE5FF] tracking-wide uppercase">
+            Gestión Ambiental · Portal Vecino
           </div>
         </div>
 
@@ -84,9 +85,11 @@ const isActive = (path: string) => {
         <!-- Header institucional mobile-first -->
         <header class="sticky top-0 z-30 bg-[#1565C0] lg:bg-white text-white lg:text-[#1A1A1A] border-b border-[#E0E4E8] px-4 h-14 flex items-center justify-between">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="lg:hidden w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-              <Recycle class="w-5 h-5 text-white" />
-            </div>
+            <img
+              src="/images/isotipo-alcaldia-ayacucho.png"
+              alt="Alcaldía de Ayacucho"
+              class="lg:hidden w-9 h-9 object-contain shrink-0"
+            />
             <div class="min-w-0">
               <div class="text-sm font-bold leading-tight truncate">
                 Gestión Ambiental Ayacucho

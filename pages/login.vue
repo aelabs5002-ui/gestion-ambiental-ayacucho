@@ -52,11 +52,13 @@ const accesoRapidoDemo = async (demoRole: 'usuario' | 'admin' | 'supervisor') =>
     <div class="flex-1 flex items-center justify-center p-4 py-8">
       <div class="w-full max-w-md space-y-5">
         <!-- Encabezado institucional -->
-        <div class="text-center space-y-2">
-          <div class="w-14 h-14 mx-auto rounded-xl bg-[#1565C0] text-white flex items-center justify-center shadow-card">
-            <Recycle class="w-8 h-8" />
-          </div>
-          <h1 class="text-2xl font-bold text-[#1A1A1A] leading-tight">
+        <div class="text-center space-y-2.5">
+          <img
+            src="/images/logo-alcaldia-ayacucho.png"
+            alt="Alcaldía Bolivariana del Municipio Ayacucho"
+            class="h-20 sm:h-24 mx-auto object-contain drop-shadow-sm"
+          />
+          <h1 class="text-xl sm:text-2xl font-bold text-[#1A1A1A] leading-tight">
             Gestión Ambiental Ayacucho
           </h1>
           <p class="text-sm text-[#616161]">
