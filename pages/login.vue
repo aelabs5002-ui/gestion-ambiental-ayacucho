@@ -62,7 +62,7 @@ const accesoRapidoDemo = async (demoRole: 'usuario' | 'admin' | 'supervisor') =>
             Gestión Ambiental Ayacucho
           </h1>
           <p class="text-sm text-[#616161]">
-            Portal oficial de recolección de desechos sólidos y pagos con Ubii Pagos
+            Portal oficial de recolección de desechos sólidos y pagos digitales
           </p>
         </div>
 

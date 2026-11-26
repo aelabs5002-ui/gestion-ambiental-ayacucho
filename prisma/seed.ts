@@ -222,7 +222,7 @@ async function main() {
         estadoPago === 'pagado' ? new Date(anio, mes - 1, Math.min(25, 4 + ((i * 3) % 18))) : null
       const ref =
         estadoPago === 'pagado'
-          ? `UBII-${anio}${String(mes).padStart(2, '0')}-${String(100000 + i * 317 + offset * 43).slice(0, 6)}`
+          ? `PAY-${anio}${String(mes).padStart(2, '0')}-${String(100000 + i * 317 + offset * 43).slice(0, 6)}`
           : null
 
       await prisma.pago.upsert({
@@ -243,7 +243,7 @@ async function main() {
           tasaCambio: tasaMes,
           fechaPago,
           fechaVenc,
-          metodo: i % 4 === 0 ? 'Ubii Pagos (Pago Móvil)' : 'Ubii Pagos (Débito)',
+          metodo: i % 4 === 0 ? 'Pago Móvil' : 'Tarjeta de Débito',
           referencia: ref,
           estado: estadoPago,
           esSimulado: true
@@ -407,7 +407,7 @@ async function main() {
       data: {
         asunto: 'Recordatorio de pago mensual — Servicio de Recolección',
         mensaje:
-          'Estimado(a) vecino(a), le recordamos que su tarifa mensual de $3.00 USD del servicio de recolección de desechos sólidos se encuentra disponible para pago rápido vía Ubii Pagos.',
+          'Estimado(a) vecino(a), le recordamos que su tarifa mensual de $3.00 USD del servicio de recolección de desechos sólidos se encuentra disponible para pago rápido en línea desde el portal.',
         tipoDestinatario: 'pendientes',
         totalDestinatarios: 7,
         destinatariosJson: JSON.stringify(usuariosCreados.slice(0, 7).map((u) => u.id)),
@@ -422,7 +422,7 @@ async function main() {
           usuarioId: usuariosCreados[0].id,
           titulo: 'Recordatorio de pago del mes en curso',
           mensaje:
-            'Tu tarifa mensual de $3.00 USD está pendiente. Puedes pagarla en segundos desde el portal con Ubii Pagos.',
+            'Tu tarifa mensual de $3.00 USD está pendiente. Puedes pagarla en segundos desde el portal con Pago Móvil o tarjeta.',
           tipo: 'aviso',
           enlace: '/usuario/pagos'
         },

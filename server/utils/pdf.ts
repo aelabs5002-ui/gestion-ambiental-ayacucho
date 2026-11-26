@@ -84,7 +84,7 @@ export async function generarComprobantePagoPdf(params: {
   // Banner modo demostración si aplica
   if (params.esSimulado) {
     page.drawRectangle({ x: 42, y: y - 22, width: width - 84, height: 28, color: ambarFondo, borderColor: ambarTexto, borderWidth: 0.8 })
-    page.drawText('MODO DEMOSTRACION: Comprobante generado con transaccion simulada (Ubii Pagos Demo).', {
+    page.drawText('MODO DEMOSTRACION: Comprobante generado con transaccion simulada (Pasarela Digital Demo).', {
       x: 54,
       y: y - 12,
       size: 9,

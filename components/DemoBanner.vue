@@ -10,6 +10,6 @@ const { settings } = useAuth()
     role="status"
   >
     <FlaskConical class="w-3.5 h-3.5 shrink-0" />
-    <span>MODO DEMOSTRACIÓN: las transacciones de Ubii Pagos y el GPS son simulados.</span>
+    <span>MODO DEMOSTRACIÓN: las transacciones de pago y el GPS son simulados.</span>
   </div>
 </template>

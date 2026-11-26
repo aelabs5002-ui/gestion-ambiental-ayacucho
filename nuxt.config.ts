@@ -16,7 +16,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Plataforma institucional de gestión de recolección de desechos sólidos, cobros con Ubii Pagos y atención vecinal — Municipio Ayacucho.'
+            'Plataforma institucional de gestión de recolección de desechos sólidos, pagos digitales y atención vecinal — Municipio Ayacucho.'
         }
       ],
       link: [

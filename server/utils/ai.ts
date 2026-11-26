@@ -21,7 +21,7 @@ export async function generateAssistantReply(params: {
 Responde siempre en español claro, institucional, cordial y conciso (máximo 120 palabras).
 Datos reales del servicio:
 - Tarifa mensual por jefe de familia: $${settings.montoMensualUsd.toFixed(2)} USD (equivalente referencial: Bs. ${montoBs} a tasa Bs. ${settings.tasaCambio.toFixed(2)}/USD).
-- Pasarela de pago habilitada: Ubii Pagos (Pago Móvil, débito y crédito).
+- Medios de pago digitales habilitados: Pago Móvil, tarjeta de débito y transferencia bancaria a través de la pasarela de pagos del portal (sin mencionar marcas comerciales específicas).
 - Al confirmar el pago, el sistema emite automáticamente un comprobante oficial en PDF.
 - Sectores y horarios:
   * Centro — Plaza Bolívar: Lunes y Jueves, 7:00 AM a 10:30 AM (Unidad 1).
@@ -83,9 +83,9 @@ Datos reales del servicio:
   // Respaldo inteligente en español cuando GEMINI_API_KEY no está configurada (ideal para demostración)
   const q = params.mensajeUsuario.toLowerCase()
 
-  if (q.includes('pag') || q.includes('cuanto') || q.includes('cuánto') || q.includes('ubii') || q.includes('bs') || q.includes('bolivar') || q.includes('tasa')) {
+  if (q.includes('pag') || q.includes('cuanto') || q.includes('cuánto') || q.includes('bs') || q.includes('bolivar') || q.includes('tasa')) {
     return {
-      texto: `Hola ${params.nombreUsuario}. La tarifa mensual del servicio de recolección es de $${settings.montoMensualUsd.toFixed(2)} USD (aprox. Bs. ${montoBs} a la tasa referencial de Bs. ${settings.tasaCambio.toFixed(2)}/USD). Actualmente tu estado del mes figura como "${params.estadoPagoActual}". Puedes cancelar en segundos desde la pestaña "Pagos" usando Ubii Pagos (Pago Móvil o débito) y descargar de inmediato tu comprobante oficial en PDF.`,
+      texto: `Hola ${params.nombreUsuario}. La tarifa mensual del servicio de recolección es de $${settings.montoMensualUsd.toFixed(2)} USD (aprox. Bs. ${montoBs} a la tasa referencial de Bs. ${settings.tasaCambio.toFixed(2)}/USD). Actualmente tu estado del mes figura como "${params.estadoPagoActual}". Puedes cancelar en segundos desde la pestaña "Pagos" usando Pago Móvil, débito o transferencia bancaria y descargar de inmediato tu comprobante oficial en PDF.`,
       proveedor: 'simulado'
     }
   }
@@ -106,13 +106,13 @@ Datos reales del servicio:
 
   if (q.includes('comprobante') || q.includes('recibo') || q.includes('pdf') || q.includes('solvencia')) {
     return {
-      texto: `Todos tus comprobantes oficiales en PDF están disponibles en la sección "Pagos" → "Historial de pagos". Solo haz clic en el ícono de descarga junto al mes cancelado para obtener tu constancia con número de referencia Ubii.`,
+      texto: `Todos tus comprobantes oficiales en PDF están disponibles en la sección "Pagos" → "Historial de pagos". Solo haz clic en el ícono de descarga junto al mes cancelado para obtener tu constancia con número de referencia oficial.`,
       proveedor: 'simulado'
     }
   }
 
   return {
-    texto: `¡Hola ${params.nombreUsuario}! Soy el asistente virtual del ${settings.nombreInstitucion}. Puedo ayudarte con:\n• Estado de cuenta y pagos con Ubii Pagos ($${settings.montoMensualUsd.toFixed(2)} USD / Bs. ${montoBs}).\n• Horarios y ubicación en vivo de las 3 unidades de recolección.\n• Cómo registrar denuncias, sugerencias y descargar comprobantes PDF.\n\n¿Sobre cuál de estos temas deseas consultar?`,
+    texto: `¡Hola ${params.nombreUsuario}! Soy el asistente virtual del ${settings.nombreInstitucion}. Puedo ayudarte con:\n• Estado de cuenta y pagos digitales ($${settings.montoMensualUsd.toFixed(2)} USD / Bs. ${montoBs}).\n• Horarios y ubicación en vivo de las 3 unidades de recolección.\n• Cómo registrar denuncias, sugerencias y descargar comprobantes PDF.\n\n¿Sobre cuál de estos temas deseas consultar?`,
     proveedor: 'simulado'
   }
 }

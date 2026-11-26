@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         mensajes: {
           create: {
             rol: 'assistant',
-            contenido: `¡Hola ${user.nombre.split(' ')[0]}! Soy el Asistente Virtual de Gestión Ambiental Ayacucho. Puedo informarte sobre tu pago mensual ($3.00 USD vía Ubii Pagos), horarios de recolección en tu sector y cómo registrar denuncias o sugerencias. ¿En qué te ayudo hoy?`
+            contenido: `¡Hola ${user.nombre.split(' ')[0]}! Soy el Asistente Virtual de Gestión Ambiental Ayacucho. Puedo informarte sobre tu pago mensual ($3.00 USD por Pago Móvil, tarjeta o transferencia), horarios de recolección en tu sector y cómo registrar denuncias o sugerencias. ¿En qué te ayudo hoy?`
           }
         }
       },

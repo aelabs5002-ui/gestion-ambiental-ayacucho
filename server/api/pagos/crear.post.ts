@@ -6,7 +6,7 @@ import { getPaymentAdapter } from '~/server/utils/payments'
 
 const crearPagoSchema = z.object({
   pagoIds: z.array(z.string().min(1)).min(1, 'Selecciona al menos un período a pagar'),
-  metodo: z.string().min(2).default('Ubii Pagos (Pago Móvil)'),
+  metodo: z.string().min(2).default('Pago Móvil'),
   telefonoPagoMovil: z.string().optional(),
   bancoOrigen: z.string().optional()
 })

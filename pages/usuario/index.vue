@@ -91,7 +91,7 @@ const settings = computed(() => data.value?.settings)
               class="btn-primary flex-1 text-base h-12"
             >
               <CreditCard class="w-5 h-5" />
-              Pagar ahora con Ubii Pagos
+              Pagar ahora
               <ArrowRight class="w-4 h-4" />
             </NuxtLink>
 

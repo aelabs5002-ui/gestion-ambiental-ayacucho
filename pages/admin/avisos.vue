@@ -14,7 +14,7 @@ const hogares = computed(() => hogaresData.value?.items || [])
 const form = reactive({
   asunto: 'Recordatorio de pago mensual — Servicio de Recolección Ayacucho',
   mensaje:
-    'Estimado(a) [Nombre], le recordamos que su pago del servicio de recolección correspondiente al mes de [Mes] por un monto de $3.00 USD se encuentra pendiente. Puede cancelar en segundos con Ubii Pagos desde el portal.',
+    'Estimado(a) [Nombre], le recordamos que su pago del servicio de recolección correspondiente al mes de [Mes] por un monto de $3.00 USD se encuentra pendiente. Puede cancelar en segundos en línea desde el portal.',
   tipoDestinatario: 'pendientes' as 'pendientes' | 'vencidos' | 'manual',
   usuarioIds: [] as string[]
 })

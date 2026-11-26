@@ -49,13 +49,13 @@ class DemoUbiiAdapter implements PaymentAdapter {
     const suffix = Math.floor(100000 + Math.random() * 900000)
     const now = new Date()
     const yyyymm = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`
-    const referencia = `UBII-DEMO-${yyyymm}-${suffix}`
+    const referencia = `PAY-DEMO-${yyyymm}-${suffix}`
 
     return {
       referencia,
       estado: 'aprobado',
       esSimulado: true,
-      mensaje: 'Transacción simulada exitosamente en Modo Demostración (Ubii Pagos).'
+      mensaje: 'Transacción simulada exitosamente en Modo Demostración (Pasarela de Pagos Digital).'
     }
   }
 

@@ -17,7 +17,7 @@ const { data, refresh } = await useFetch<any>('/api/pagos/resumen', {
 })
 
 const selectedIds = ref<string[]>([])
-const metodo = ref('Ubii Pagos (Pago Móvil)')
+const metodo = ref('Pago Móvil')
 const telefonoPagoMovil = ref('0414-7123456')
 const bancoOrigen = ref('0102 — Banco de Venezuela')
 const procesando = ref(false)
@@ -95,7 +95,7 @@ const confirmarPago = async () => {
     <div>
       <h1 class="text-2xl font-bold text-[#1A1A1A]">Pagos e Historial</h1>
       <p class="text-sm text-[#616161]">
-        Cancela tu tarifa mensual de $3.00 USD con Ubii Pagos y descarga tus comprobantes en PDF.
+        Cancela tu tarifa mensual de $3.00 USD por pasarela de pagos digital y descarga tus comprobantes en PDF.
       </p>
     </div>
 
@@ -113,7 +113,7 @@ const confirmarPago = async () => {
             {{ pagoExitoso.resultado?.mensaje }}
           </p>
           <p class="text-xs font-mono text-[#2E7D32]">
-            Referencia Ubii: <strong>{{ pagoExitoso.resultado?.referencia }}</strong>
+            Referencia de pago: <strong>{{ pagoExitoso.resultado?.referencia }}</strong>
           </p>
         </div>
       </div>
@@ -134,18 +134,18 @@ const confirmarPago = async () => {
       </div>
     </div>
 
-    <!-- Sección Checkout Ubii Pagos -->
+    <!-- Sección Checkout Pasarela Digital -->
     <section v-if="pendientes.length > 0" class="card-surface space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#EEEEEE]">
         <div>
-          <h2 class="text-lg font-semibold text-[#1A1A1A]">Checkout — Ubii Pagos</h2>
+          <h2 class="text-lg font-semibold text-[#1A1A1A]">Checkout — Pasarela de Pagos Digital</h2>
           <p class="text-xs text-[#616161]">
             Tasa de cambio referencial: Bs. {{ settings?.tasaCambio?.toFixed(2) }} / USD
           </p>
         </div>
         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-[#1565C0] bg-[#1565C0]/10 px-2.5 py-1 rounded-full">
           <ShieldCheck class="w-4 h-4" />
-          Pasarela segura Ubii
+          Pago en línea seguro
         </span>
       </div>
 
@@ -186,21 +186,21 @@ const confirmarPago = async () => {
         </label>
       </div>
 
-      <!-- Selector de método Ubii -->
+      <!-- Selector de método de pago -->
       <div class="space-y-2">
         <div class="text-xs font-semibold uppercase tracking-wide text-[#616161]">
-          2. Método de pago en Ubii Pagos
+          2. Método de pago
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <button
             type="button"
             class="p-3 rounded-lg border text-left flex items-center gap-2.5 transition"
             :class="
-              metodo === 'Ubii Pagos (Pago Móvil)'
+              metodo === 'Pago Móvil'
                 ? 'border-[#1565C0] bg-[#1565C0]/[0.06] text-[#1565C0]'
                 : 'border-[#E0E4E8] text-[#1A1A1A]'
             "
-            @click="metodo = 'Ubii Pagos (Pago Móvil)'"
+            @click="metodo = 'Pago Móvil'"
           >
             <Smartphone class="w-5 h-5 shrink-0" />
             <div>
@@ -213,16 +213,16 @@ const confirmarPago = async () => {
             type="button"
             class="p-3 rounded-lg border text-left flex items-center gap-2.5 transition"
             :class="
-              metodo === 'Ubii Pagos (Débito)'
+              metodo === 'Tarjeta de Débito'
                 ? 'border-[#1565C0] bg-[#1565C0]/[0.06] text-[#1565C0]'
                 : 'border-[#E0E4E8] text-[#1A1A1A]'
             "
-            @click="metodo = 'Ubii Pagos (Débito)'"
+            @click="metodo = 'Tarjeta de Débito'"
           >
             <CreditCard class="w-5 h-5 shrink-0" />
             <div>
               <div class="text-sm font-semibold">Tarjeta Débito</div>
-              <div class="text-[11px] text-[#616161]">Nacional / Ubii</div>
+              <div class="text-[11px] text-[#616161]">Banca nacional</div>
             </div>
           </button>
 
@@ -230,11 +230,11 @@ const confirmarPago = async () => {
             type="button"
             class="p-3 rounded-lg border text-left flex items-center gap-2.5 transition"
             :class="
-              metodo === 'Ubii Pagos (Transferencia)'
+              metodo === 'Transferencia Bancaria'
                 ? 'border-[#1565C0] bg-[#1565C0]/[0.06] text-[#1565C0]'
                 : 'border-[#E0E4E8] text-[#1A1A1A]'
             "
-            @click="metodo = 'Ubii Pagos (Transferencia)'"
+            @click="metodo = 'Transferencia Bancaria'"
           >
             <Building2 class="w-5 h-5 shrink-0" />
             <div>
@@ -244,7 +244,7 @@ const confirmarPago = async () => {
           </button>
         </div>
 
-        <div v-if="metodo === 'Ubii Pagos (Pago Móvil)'" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <div v-if="metodo === 'Pago Móvil'" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div>
             <label class="block text-xs font-medium text-[#1A1A1A] mb-1">Banco emisor</label>
             <select v-model="bancoOrigen" class="input-field">
@@ -276,7 +276,7 @@ const confirmarPago = async () => {
           @click="confirmarPago"
         >
           <CreditCard class="w-5 h-5" />
-          {{ procesando ? 'Procesando en Ubii...' : 'Confirmar pago ahora' }}
+          {{ procesando ? 'Procesando pago...' : 'Confirmar pago ahora' }}
         </button>
       </div>
 
